@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Rating;
 use Illuminate\Http\Request;
+use App\Models\Book;
 
 class RatingController extends Controller
 {
@@ -20,7 +21,9 @@ class RatingController extends Controller
      */
     public function create()
     {
-        //
+        $books = Book::with('author')->get();
+
+        return view('ratings.create', compact('books'));
     }
 
     /**
@@ -28,7 +31,17 @@ class RatingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'book' => 'required|exists:books,id',
+            'rating' => 'required|integer|between:1,10',
+        ]);
+
+        Rating::create([
+            'book_id' => $request->input('book'),
+            'rating' => $request->input('rating'),
+        ]);
+
+        return redirect()->route('books.index')->with('success', 'Rating submitted successfully!');
     }
 
     /**

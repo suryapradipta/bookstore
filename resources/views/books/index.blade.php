@@ -1,4 +1,5 @@
-<a href="{{ route('top-authors') }}">Top Authors</a>
+<a href="{{ route('authors.top') }}">Top Authors</a>
+<a href="{{ route('ratings.create') }}">Rate a Book</a>
 <form action="{{ route('books.index') }}" method="GET">
     <label for="perPage">Show:</label>
     <select name="perPage" id="perPage">
