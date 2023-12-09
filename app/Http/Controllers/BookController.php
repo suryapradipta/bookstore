@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Author;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -53,6 +54,22 @@ class BookController extends Controller
     
             return view('books.index', compact('books'));
         }
+
+
+    public function topAuthors()
+    {
+        $topAuthors = Author::withCount(['books' => function ($bookQuery) {
+            $bookQuery->whereHas('ratings', function ($ratingQuery) {
+                $ratingQuery->where('rating', '>', 5);
+            });
+        }])
+        ->orderByDesc('books_count')
+        ->limit(10)
+        ->get();
+
+    
+        return view('authors.top', compact('topAuthors'));
+    }
 
     /**
      * Show the form for creating a new resource.

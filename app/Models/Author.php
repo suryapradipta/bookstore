@@ -13,4 +13,9 @@ class Author extends Model
     {
         return $this->hasMany(Book::class);
     }
+
+    public function ratingsCount()
+    {
+        return $this->hasManyThrough(Rating::class, Book::class)->selectRaw('count(*) as ratings_count')->groupBy('author_id');
+    }
 }

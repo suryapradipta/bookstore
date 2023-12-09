@@ -1,3 +1,4 @@
+<a href="{{ route('top-authors') }}">Top Authors</a>
 <form action="{{ route('books.index') }}" method="GET">
     <label for="perPage">Show:</label>
     <select name="perPage" id="perPage">
