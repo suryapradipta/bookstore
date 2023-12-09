@@ -19,16 +19,40 @@ class BookController extends Controller
             ->whereHas('ratings', function ($query) {
                 $query->where('rating', '>', 0);
             });
-        
+            
+            
+            if ($search) {
+                $query->where(function ($innerQuery) use ($search) {
+                    $innerQuery->where('name', 'like', '%' . $search . '%')
+                        ->orWhereHas('author', function ($authorQuery) use ($search) {
+                            $authorQuery->where('name', 'like', '%' . $search . '%');
+                        });
+                });
+            }
 
-        if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $topBooks = $query->withCount(['ratings' => function ($ratingQuery) {
+                $ratingQuery->select(\DB::raw('count(distinct user_id)'));
+            }])
+            ->orderByDesc('ratings_count')
+            ->orderByDesc(\DB::raw('COALESCE((SELECT AVG(rating) FROM ratings WHERE book_id = books.id), 0)'))
+            ->limit(10)
+            ->get();
+            
+            
+            $books = $query->withCount(['ratings' => function ($ratingQuery) {
+                $ratingQuery->select(\DB::raw('count(distinct user_id)'));
+            }])
+            ->orderByDesc('ratings_count')
+            ->orderByDesc(\DB::raw('COALESCE((SELECT AVG(rating) FROM ratings WHERE book_id = books.id), 0)'))
+            ->paginate($perPage);
+            
+            if ($books->isEmpty() && $topBooks->isNotEmpty()) {
+                $books = $topBooks->paginate($perPage);
+            }
+    
+    
+            return view('books.index', compact('books'));
         }
-
-        $books = $query->paginate($perPage);
-
-        return view('books.index', compact('books'));
-    }
 
     /**
      * Show the form for creating a new resource.

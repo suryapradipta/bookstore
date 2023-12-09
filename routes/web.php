@@ -14,9 +14,7 @@ use App\Http\Controllers\BookController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [BookController::class, 'index'])->name('books.index');
 
 Route::get('/test-database', function () {
     try {
@@ -26,5 +24,3 @@ Route::get('/test-database', function () {
         die("Could not connect to the database. Error: " . $e->getMessage());
     }
 });
-
-Route::get('/books', [BookController::class, 'index'])->name('books.index');
