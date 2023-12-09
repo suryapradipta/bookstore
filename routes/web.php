@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/test-database', function () {
+    try {
+        DB::connection()->getPdo();
+        echo "Connected successfully to the database!";
+    } catch (\Exception $e) {
+        die("Could not connect to the database. Error: " . $e->getMessage());
+    }
+});
+
+Route::get('/books', [BookController::class, 'index'])->name('books.index');
